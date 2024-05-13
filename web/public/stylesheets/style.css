@@ -1,0 +1,24 @@
+:root{
+  --global-background: rgba(242, 242, 242, .92);
+  --nav-width: 575px;
+  --nav-height: 44px;
+  --nav-submenu-height: 350px;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+body{
+  font-family: "Times New Roman", "標楷體";
+  background: var(--global-background);
+}
+
+ul, li{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a{
+  text-decoration: none;
+}
