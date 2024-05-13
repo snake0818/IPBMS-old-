@@ -1,0 +1,125 @@
+/* 導覽列 */
+#nav {
+  left: 0;
+  right: 0;
+  z-index: 999;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-height: var(--nav-height);
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: none;
+  position: fixed;
+}
+#nav-content {
+  margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--nav-width);
+  padding: 0 var(--nav-height / 2);
+  z-index: 2;
+}
+.nav-list{
+  cursor: default;
+  margin: 0 -8px;
+  width: auto;
+  height: var(--nav-height);
+  display: flex;
+  justify-content: space-between;
+  user-select: none;
+  list-style: none;
+  
+}
+.nav-link{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  padding: 0 12px;
+  height: var(--nav-height);
+}
+/* 導覽列選單 */
+#nav-menu{
+  display: contents;
+  flex-grow: 1;
+  height: var(--nav-height);
+}
+.nav-menu-list{
+  display: inherit;
+}
+.nav-item{
+  box-sizing: border-box;
+}
+#nav #nav-menu .nav-item-text {
+  color: rgba(0, 0, 0, .5) !important;
+  font-size: 16px;
+  font-weight: bold;
+}
+#nav #nav-content #nav-title,
+#nav .nav-item a:hover,
+#nav .nav-item.active a {
+  color: rgba(0, 0, 0, 1) !important;
+}
+/* 導覽列副選單 */
+.nav-submenu{
+  overflow: hidden;
+  visibility: hidden;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 44px;
+  text-align: start;
+  transition: height 0.5s ease, visibility 0.5s ease;
+}
+.nav-submenu-container{
+  left: 0;
+  right: 0;
+  margin-top: var(--nav-height);
+  padding-top: -44px;
+  max-height: calc(100% - var(--nav-height));
+  overflow-y: auto;
+}
+.nav-submenu-content{
+  margin: 0 auto;
+  padding: 22px;
+  width: 100%;
+  max-width: 575px;
+  display: flex;
+}
+#nav .nav-item:hover .nav-submenu,
+#nav .nav-item.active .nav-submenu{
+  visibility: visible;
+  height: var(--nav-submenu-height);
+  background: #fff;
+}
+#nav #nav-menu.active .nav-submenu{
+  transition: none;
+}
+/* 導覽列項目集合 */
+.nav-submenu-group-main{
+  position: relative;
+  padding-inline-end: 88px;
+}
+.nav-submenu-group-main ul.nav-submenu-list{
+  font-size: 24px;
+}
+.nav-submenu-group{
+  position: relative;
+  padding-inline-end: 44px;
+}
+.nav-submenu-group ul.nav-submenu-list{
+  font-size: 16px;
+}
+.nav-submenu-header{
+  font-size: 12px;
+  font-weight: bold;
+  color: #6E6E73;
+}
+.nav-submenu-list {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #333336;
+}
