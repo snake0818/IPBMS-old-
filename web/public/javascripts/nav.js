@@ -1,15 +1,30 @@
+const nav = document.querySelector('#nav');
 const navItems = document.querySelectorAll('.nav-item');
-const navMenu = document.querySelector('#nav-menu')
+const navSubmenus = document.querySelectorAll('.nav-submenu');
 
+nav.addEventListener('mouseleave', function(){
+  navItems.forEach(item => { item.classList.remove('active'); });
+  this.classList.remove('nav-submenu-open');
+  this.classList.remove('nav-curtain-open');
+  this.classList.add('nav-animating');
+  this.classList.add('nav-submenu-closing');
+  setTimeout(() => {
+    this.classList.remove('nav-submenu-open');
+    this.classList.remove('nav-animating');
+    this.classList.remove('nav-submenu-closing');
+  }, 500);
+});
 navItems.forEach(item => {
   item.addEventListener('mouseover', function () {
-    // 將鼠標懸停的 nav-item 添加 active 類
-    navMenu.classList.add('active');
-  });
-  item.addEventListener('mouseout', function () {
-    // 將鼠標移出時移除 nav-item 上的 active 類
-    setTimeout(() => {
-      navMenu.classList.remove('active');
-    }, 500)
+    if (!this.classList.contains('active')) {
+      navItems.forEach(item => { item.classList.remove('active'); });
+      this.classList.add('active')
+      nav.classList.add('nav-animating');
+      nav.classList.add('nav-curtain-open');
+      setTimeout(() => {
+        nav.classList.add('nav-submenu-open');
+        nav.classList.remove('nav-animating');
+      }, 500);
+    }
   });
 });

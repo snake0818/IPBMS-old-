@@ -8,7 +8,7 @@
   padding: 0;
   width: 100%;
   max-height: var(--nav-height);
-  background: rgba(0, 0, 0, 0);
+  background: rgba(240, 240, 240, .99);
   backdrop-filter: none;
   position: fixed;
 }
@@ -40,6 +40,31 @@
   padding: 0 12px;
   height: var(--nav-height);
 }
+#nav.nav-menu-content-closing{
+
+}
+/* 模糊背景 */
+.nav-curtain{
+  background: rgba(232,232,232,.4);
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);
+  visibility: hidden;
+  position: fixed;
+  opacity: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 998;
+  transition: opacity .32s cubic-bezier(.4,0,.6,1) 80ms,visibility .32s step-end 80ms;
+}
+#nav.nav-curtain-open~.nav-curtain{
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .32s cubic-bezier(.4,0,.6,1) 80ms,visibility .32s step-start 80ms
+}
 /* 導覽列選單 */
 #nav-menu{
   display: contents;
@@ -64,6 +89,7 @@
 }
 /* 導覽列副選單 */
 .nav-submenu{
+  background: #fff;
   overflow: hidden;
   visibility: hidden;
   position: absolute;
@@ -72,7 +98,6 @@
   top: 0;
   height: 44px;
   text-align: start;
-  transition: height 0.5s ease, visibility 0.5s ease;
 }
 .nav-submenu-container{
   left: 0;
@@ -89,13 +114,16 @@
   max-width: 575px;
   display: flex;
 }
-#nav .nav-item:hover .nav-submenu,
+
 #nav .nav-item.active .nav-submenu{
   visibility: visible;
   height: var(--nav-submenu-height);
-  background: #fff;
 }
-#nav #nav-menu.active .nav-submenu{
+#nav.nav-animating .nav-item.active .nav-submenu,
+#nav.nav-animating.nav-submenu-closing .nav-submenu{
+  transition: height .5s ease 80ms, visibility .5s ease 80ms;
+}
+#nav.nav-submenu-open .nav-item.active .nav-submenu{
   transition: none;
 }
 /* 導覽列項目集合 */
