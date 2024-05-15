@@ -1,0 +1,21 @@
+#home-section{
+  background: rgba(230, 230, 230, .8);
+  padding-top: 120px;
+  padding-bottom: 60px;
+  display: block;
+}
+
+#demo-videos-show{
+  background: rgba(150, 150, 150, .8);
+  height: 250px;
+  align-content: center;
+}
+
+#keyword-block{
+  font-family: 'Times New Roman', Times, serif;
+}
+#keyword-block .btn-keyword{
+  font-size: 8px;
+  color: #fff;
+  background: #8315f9;
+}
