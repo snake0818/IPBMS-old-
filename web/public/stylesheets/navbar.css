@@ -1,3 +1,7 @@
+#header {
+  all: unset;
+}
+
 /* 導覽列 */
 #nav {
   left: 0;
@@ -12,6 +16,7 @@
   backdrop-filter: none;
   position: fixed;
 }
+
 #nav-content {
   margin: 0 auto;
   box-sizing: border-box;
@@ -20,7 +25,8 @@
   padding: 0 var(--nav-height / 2);
   z-index: 2;
 }
-.nav-list{
+
+.nav-list {
   cursor: default;
   margin: 0 -8px;
   width: auto;
@@ -29,9 +35,10 @@
   justify-content: space-between;
   user-select: none;
   list-style: none;
-  
+
 }
-.nav-link{
+
+.nav-link {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,12 +47,10 @@
   padding: 0 12px;
   height: var(--nav-height);
 }
-#nav.nav-menu-content-closing{
 
-}
 /* 模糊背景 */
-.nav-curtain{
-  background: rgba(232,232,232,.4);
+.nav-curtain {
+  background: rgba(232, 232, 232, .4);
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
   visibility: hidden;
@@ -58,37 +63,45 @@
   width: 100%;
   height: 100%;
   z-index: 998;
-  transition: opacity .32s cubic-bezier(.4,0,.6,1) 80ms,visibility .32s step-end 80ms;
+  transition: opacity .32s cubic-bezier(.4, 0, .6, 1) 80ms, visibility .32s step-end 80ms;
 }
-#nav.nav-curtain-open~.nav-curtain{
+
+#nav.nav-curtain-open~.nav-curtain {
   opacity: 1;
   visibility: visible;
-  transition: opacity .32s cubic-bezier(.4,0,.6,1) 80ms,visibility .32s step-start 80ms
+  transition: opacity .32s cubic-bezier(.4, 0, .6, 1) 80ms, visibility .32s step-start 80ms
 }
+
 /* 導覽列選單 */
-#nav-menu{
+#nav-menu {
   display: contents;
   flex-grow: 1;
   height: var(--nav-height);
 }
-.nav-menu-list{
+
+.nav-menu-list {
   display: inherit;
 }
-.nav-item{
+
+.nav-item {
   box-sizing: border-box;
 }
+
 #nav #nav-menu .nav-item-text {
   color: rgba(0, 0, 0, .5) !important;
   font-size: 16px;
   font-weight: bold;
 }
+
 #nav #nav-content #nav-title,
 #nav .nav-item a:hover,
-#nav .nav-item.active a {
-  color: rgba(0, 0, 0, 1) !important;
+#nav .nav-item.active a.nav-link,
+.nav-submenu-link:hover {
+  color: rgba(0, 0, 0, 1);
 }
+
 /* 導覽列副選單 */
-.nav-submenu{
+.nav-submenu {
   background: #fff;
   overflow: hidden;
   visibility: hidden;
@@ -99,7 +112,8 @@
   height: 44px;
   text-align: start;
 }
-.nav-submenu-container{
+
+.nav-submenu-container {
   left: 0;
   right: 0;
   margin-top: var(--nav-height);
@@ -107,7 +121,8 @@
   max-height: calc(100% - var(--nav-height));
   overflow-y: auto;
 }
-.nav-submenu-content{
+
+.nav-submenu-content {
   margin: 0 auto;
   padding: 22px;
   width: 100%;
@@ -115,39 +130,67 @@
   display: flex;
 }
 
-#nav .nav-item.active .nav-submenu{
+#nav .nav-item.active .nav-submenu {
   visibility: visible;
   height: var(--nav-submenu-height);
 }
+
 #nav.nav-animating .nav-item.active .nav-submenu,
-#nav.nav-animating.nav-submenu-closing .nav-submenu{
+#nav.nav-animating.nav-submenu-closing .nav-submenu {
   transition: height .5s ease 80ms, visibility .5s ease 80ms;
 }
-#nav.nav-submenu-open .nav-item.active .nav-submenu{
+
+#nav.nav-submenu-open .nav-item.active .nav-submenu {
   transition: none;
 }
+
 /* 導覽列項目集合 */
-.nav-submenu-group-main{
+.nav-submenu-group-main {
   position: relative;
   padding-inline-end: 88px;
 }
-.nav-submenu-group-main ul.nav-submenu-list{
+
+.nav-submenu-group-main ul.nav-submenu-list {
   font-size: 24px;
 }
-.nav-submenu-group{
+
+.nav-submenu-group {
   position: relative;
   padding-inline-end: 44px;
 }
-.nav-submenu-group ul.nav-submenu-list{
+
+.nav-submenu-group ul.nav-submenu-list {
   font-size: 16px;
 }
-.nav-submenu-header{
+
+.nav-submenu-header {
   font-size: 12px;
   font-weight: bold;
   color: #6E6E73;
 }
+
 .nav-submenu-list {
   margin-top: 10px;
   font-weight: bold;
   color: #333336;
+}
+.nav-submenu-link{
+  color: rgba(0, 0, 0, .8);
+}
+
+.nav-submenu-item,
+.nav-submenu-header {
+  opacity: 0;
+  transform: translateY(-4px);
+  transition-property: opacity, transform;
+  transition-duration: min(.16s + 20ms* calc(var(--var-item-total) - var(--var-item-number)), .24s);
+  transition-delay: 0s;
+}
+
+.nav-item.active .nav-submenu-item,
+.nav-item.active .nav-submenu-header {
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: .32s;
+  transition-delay: calc(160ms + var(--var-item-number)* 20ms);
 }
