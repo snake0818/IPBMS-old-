@@ -8,27 +8,29 @@
   <body>
     <%- include('./partials/navbar.ejs') %>
     <section id="home-section">
-      <div class="container-sm">
+      <div class="home-container">
         <div class="row justify-content-between align-items-center">
           <div class="col" style="max-width: 48%;padding: 0;">
-            <h1 class="fs-4 fw-bold">
+            <h1 class="fs-2 fw-bold mt-2 mb-3">
               <span>基於深度學習與數位孿生的智慧豬隻養殖管理系統開發與應用</span>
             </h1>
-            <p class="fw-5">監控養殖場狀況，解決養殖業依賴人工判斷與人力短缺的問題，從而提升豬隻養殖的效益。並且將智慧豬隻養殖管理之功能建置成容器化雲端服務，讓養豬業者透過操作 Web GUI，即可方便地進行智慧豬隻養殖與管理。</p>
+            <p class="fw-5 mb-4">監控養殖場狀況，解決養殖業依賴人工判斷與人力短缺的問題，從而提升豬隻養殖的效益。並且將智慧豬隻養殖管理之功能建置成容器化雲端服務，讓養豬業者透過操作 Web GUI，即可方便地進行智慧豬隻養殖與管理。</p>
           </div>
           <div class="col text-center" style="max-width: 48%;padding: 0;">
             <div id="demo-videos-show" class="shadow-lg rounded-1 mb-2">
               範例結果影片展示區塊
             </div>
-            <div id="keyword-block" class="mb-2">
-              <div class="btn btn-sm btn-keyword">Deep Learning</div>
-              <div class="btn btn-sm btn-keyword">Digtal Twin</div>
-              <div class="btn btn-sm btn-keyword">Intelligent Pig-Breeding Managment</div>
-              <div class="btn btn-sm btn-keyword">Pig Size Estimation</div>
-              <div class="btn btn-sm btn-keyword">Pig Activity Detection and Tracking</div>
+            <div id="keyword-block">
+              <div class="btn btn-sm btn-keyword mb-2">Deep Learning</div>
+              <div class="btn btn-sm btn-keyword mb-2">Digtal Twin</div>
+              <div class="btn btn-sm btn-keyword mb-2">Intelligent Pig-Breeding Managment</div>
+              <div class="btn btn-sm btn-keyword mb-2">Pig Size Estimation</div>
+              <div class="btn btn-sm btn-keyword mb-2">Pig Activity Detection and Tracking</div>
             </div>
             <div id="github-block">
-              github demo
+              <a href="">
+                <img src="/images/github-demo.svg">
+              </a>
             </div>
           </div>
         </div>
