@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "EOM/p7mYWrgHbhHlmX3zOoklEJeTWG0O4SMyzQGr4p4=",
+  "Source": "PigDB_API",
+  "BasePath": "_content/PigDB_API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
