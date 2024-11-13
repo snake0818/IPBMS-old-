@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- <title>@ViewData["Title"]</title> -->
+  <link rel="stylesheet" href="../libs/bootstraps/bootstrap.min.css" />
+  <script src="../libs/bootstraps/jquery.min.js"></script>
+  <script src="../libs/bootstraps/bootstrap.bundle.min.js"></script>
+  <!-- @await RenderSectionAsync("Scripts", required: false) -->
+  <link rel="stylesheet" href="stylesheets/style.css">
+</head>
+
+<body>
+  <partial name="navbar" />
+
+  <main role="main" class="pb-3">
+    <div class="bg-light p-3 rounded">
+      <h2 class="bg-primary text-white rounded fw-bold text-center mb-3 py-1">豬隻大小評估</h2>
+
+      <!-- @* 條件選擇 *@ -->
+      <div id="Condition_Selection_Step" class="step">
+        <link rel="stylesheet" href="stylesheets/custom_select.css">
+        <script src="javascripts/custom_select.js"></script>
+        <!-- 選擇待辨識媒體 -->
+        <div id="select" class="custom-select mode" onclick="handleSelectClick(event)">
+          <div class="select-box" data-selected="">
+            <span>點選媒體選項</span>
+          </div>
+          <div class="select-options">
+            <div class="option-item" data-value="1">
+              <img src="../test/Image/TestImg.png">
+              <span>選項 1</span>
+            </div>
+            <div class="option-item" data-value="2">
+              <img src="../test/Image/TestImg.png">
+              <span>選項 2</span>
+            </div>
+          </div>
+        </div>
+        <!-- 選擇欲查詢記錄 -->
+        <div id="search" class="custom-select" onclick="handleSelectClick(event)">
+          <div class="select-box" data-selected="">
+            <span>點選記錄選項</span>
+          </div>
+          <div class="select-options">
+            <div class="option-item" data-value="1">
+              <img src="../test/Image/TestImg.png">
+              <span>選項 1</span>
+            </div>
+            <div class="option-item" data-value="2">
+              <img src="../test/Image/TestImg.png">
+              <span>選項 2</span>
+            </div>
+          </div>
+        </div>
+        <div id="btn-control">
+          <button id="submit" type="submit" onclick="confirm()">執行</button>
+          <button id="mode-toggle" type="button" onclick="toggleMode(this)">查詢模式</button>
+          <script>
+            function toggleMode(target) {
+              const stepElement = target.closest(".step");
+              const selected = stepElement.querySelector(".mode .select-box");
+              const selectElements = stepElement.querySelectorAll(".custom-select");
+              selectElements.forEach(element => element.classList.toggle("mode"));
+              const modeToggleBtn = document.getElementById("mode-toggle");
+              if (selectElements[0].classList.contains("mode")) {
+                modeToggleBtn.innerText = "查詢模式";
+                selected.textContent = "點選記錄選項";
+              }
+              else {
+                modeToggleBtn.innerText = "選擇模式";
+                selected.textContent = "點選媒體選項";
+              }
+              selected.dataset.selected = '';
+            }
+          </script>
+        </div>
+      </div>
+
+      <!-- @* 結果呈現 *@ -->
+      <div id="Result_Record_Show_Step" class="step visually-hidden">
+        <!-- 結果展示 -->
+        <!-- <div id="sourcePreview" class="col-lg-6 pb-3" style="min-height: 200px;">
+          <h3 class="fw-bold" for="SourceVideo">原始影片:</h3>
+          <video id="SourceVideo" width="100%" controls style="display:none;">
+            <source id="uploadedSource" type="video/mp4" />
+            您的瀏覽器不支援 HTML5 影片。
+          </video>
+        </div> -->
+        <div id="resultPreview" class="col-lg-7 pb-3">
+          <h3 class="fw-bold" for="videoFile">追蹤檢測影片:</h3>
+          <video id="TrackingVideo" width="100%" controls style="display:none;">
+            <source id="TrackingSource" type="video/mp4" />
+            您的瀏覽器不支援 HTML5 影片。
+          </video>
+        </div>
+        <div id="resultView" class="col-lg-5 pb-3">
+          <h3 class="fw-bold" for="resultViewImg">追蹤檢測結果圖表:</h3>
+          <div class="col d-flex justify-content-center">
+            <img id="resultViewImg" class="d-block align-content-center h-100 w-100" style="min-height: 200px;" src=""
+              alt="結果圖表展示">
+          </div>
+        </div>
+      </div>
+
+      <!-- @* 錯誤提示文字 *@ -->
+      <div id="msg" class="text-center fs-3" style="color:red;"></div>
+
+      <!-- @* 方法載入 *@ -->
+      <script type="module">
+        const errorMsg = document.getElementById("msg");
+        const Views = {
+          source: document.querySelector("#sourcePreview"),
+          target: document.querySelector("#resultPreview"),
+          result: document.querySelector("#resultView"),
+          prefix: document.querySelector("#Condition_Selection_Step"),
+          suffix: document.querySelector("#Result_Record_Show_Step"),
+        };
+        import * as Service from './javascripts/Service.js';
+        Service.initialize("TRACKING", Views, errorMsg); // 初始化載入必要資訊
+        Service.RecordParam() ?? (window.confirm = () => Service.ServiceModeExcute());
+      </script>
+    </div>
+  </main>
+
+</body>
+
+</html>

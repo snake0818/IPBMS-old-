@@ -1,0 +1,77 @@
+/*********** 滾動圖卡區域 ***********/
+
+.scroll-preview-cards-container {
+  scroll-snap-type: x;
+  overflow-x: scroll;
+  padding: 10px;
+  padding-bottom: 20px;
+}
+
+/* 滾動軸樣式 */
+.scroll-preview-cards-container.scroll::-webkit-scrollbar {
+  display: block;
+  height: 10px;
+}
+
+.scroll-preview-cards-container.scroll::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 6px;
+}
+
+.scroll-preview-cards-container.scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/*********** 卡片樣式 ***********/
+
+.card-container {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+ul.card-preview-list {
+  display: grid;
+  grid-template-rows: repeat(1, auto);
+  grid-template-columns: max-content;
+  grid-auto-flow: column;
+  grid-column-gap: 20px;
+  column-gap: 20px;
+  grid-row-gap: 0px;
+  row-gap: 0px;
+}
+
+ul.card-preview-list .img-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--preview-image-size);
+  min-height: var(--preview-image-size);
+}
+
+ul.card-preview-list img {
+  max-width: var(--preview-image-size);
+  max-height: var(--preview-image-size);
+}
+
+li.card-item {
+  position: relative;
+  width: calc(var(--preview-image-size)+2rem);
+  padding: 10px;
+}
+
+li.card-item button.card-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: none;
+  border: none;
+}
+
+li.card-item:hover {
+  transform: scale(1.015);
+}

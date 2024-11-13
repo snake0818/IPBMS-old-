@@ -1,0 +1,38 @@
+:root {
+  --global-background: rgba(242, 242, 242, .92);
+  --preview-image-size: 100px;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  font-family: 'Times New Roman', '標楷體', serif;
+  background: var(--global-background);
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+
+  /*** 禁用選取 ***/
+  /* Safari */
+  -webkit-user-select: none;
+  /* Firefox */
+  -moz-user-select: none;
+  /* Internet Explorer/Edge */
+  -ms-user-select: none;
+  /* 新的瀏覽器 */
+  user-select: none;
+}
+
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
