@@ -27,6 +27,29 @@ namespace PigDB_API.Controllers
 
         #endregion
 
+        #region 圖片處理
+        #region 取得圖像清單
+        [HttpGet("Image/List")]
+        public async Task<IActionResult> GetImageList()
+        {
+            try
+            {
+                // 查詢資料庫中的影片記錄
+                var query = await _context.Images
+                    .Select(m => new
+                    {
+                        m.Id,
+                        m.Timestamp,
+                        FileName = Path.GetFileName(m.FilePath),
+                    }).ToListAsync();
+                // 檢查是否存在，並返回適當的結果
+                return query.Count != 0 ? Ok(query) : NotFound("圖像清單不存在!");
+            }
+            // 捕捉例外並回傳 500 狀態碼
+            catch (Exception ex) { return StatusCode(500, $"取得圖像清單時發生錯誤: {ex.Message}"); }
+        }
+        #endregion
+
         #region 傳入圖片
         [HttpPost("Image")]
         [Consumes("multipart/form-data")]
@@ -67,6 +90,30 @@ namespace PigDB_API.Controllers
             }
             // 捕捉例外並回傳 500 狀態碼
             catch (Exception ex) { return StatusCode(500, $"取得圖片時發生錯誤: {ex.Message}"); }
+        }
+        #endregion
+        #endregion
+
+        #region 影片處理
+        #region 取得影像清單
+        [HttpGet("Video/List")]
+        public async Task<IActionResult> GetVideoList()
+        {
+            try
+            {
+                // 查詢資料庫中的影片記錄
+                var query = await _context.Videos
+                    .Select(m => new
+                    {
+                        m.Id,
+                        m.Timestamp,
+                        FileName = Path.GetFileName(m.FilePath),
+                    }).ToListAsync();
+                // 檢查是否存在，並返回適當的結果
+                return query.Count != 0 ? Ok(query) : NotFound("影像清單不存在!");
+            }
+            // 捕捉例外並回傳 500 狀態碼
+            catch (Exception ex) { return StatusCode(500, $"取得影像清單時發生錯誤: {ex.Message}"); }
         }
         #endregion
 
@@ -114,6 +161,7 @@ namespace PigDB_API.Controllers
             // 捕捉例外並回傳 500 狀態碼
             catch (Exception ex) { return StatusCode(500, $"取得影片時發生錯誤: {ex.Message}"); }
         }
+        #endregion
         #endregion
 
         #region 方法

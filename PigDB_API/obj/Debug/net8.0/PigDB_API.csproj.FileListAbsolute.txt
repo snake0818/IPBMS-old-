@@ -136,3 +136,4 @@ D:\PigDB_API\obj\Debug\net8.0\PigDB_API.genruntimeconfig.cache
 D:\PigDB_API\obj\Debug\net8.0\ref\PigDB_API.dll
 D:\PigDB_API\bin\Debug\net8.0\DotNetEnv.dll
 D:\PigDB_API\bin\Debug\net8.0\Sprache.dll
+D:\PigDB_API\obj\Debug\net8.0\PigDB_API.sourcelink.json
