@@ -28,32 +28,14 @@
           <div class="select-box" data-selected="">
             <span>點選媒體選項</span>
           </div>
-          <div class="select-options">
-            <div class="option-item" data-value="1">
-              <img src="../test/Image/TestImg.png">
-              <span>選項 1</span>
-            </div>
-            <div class="option-item" data-value="2">
-              <img src="../test/Image/TestImg.png">
-              <span>選項 2</span>
-            </div>
-          </div>
+          <div class="select-options"></div>
         </div>
         <!-- 選擇欲查詢記錄 -->
         <div id="search" class="custom-select" onclick="handleSelectClick(event)">
           <div class="select-box" data-selected="">
             <span>點選記錄選項</span>
           </div>
-          <div class="select-options">
-            <div class="option-item" data-value="1">
-              <img src="../test/Image/TestImg.png">
-              <span>選項 1</span>
-            </div>
-            <div class="option-item" data-value="2">
-              <img src="../test/Image/TestImg.png">
-              <span>選項 2</span>
-            </div>
-          </div>
+          <div class="select-options"></div>
         </div>
         <div id="btn-control">
           <button id="submit" type="submit" onclick="confirm()">執行</button>
@@ -74,6 +56,7 @@
                 selected.textContent = "點選媒體選項";
               }
               selected.dataset.selected = '';
+              setCondition();
             }
           </script>
         </div>
@@ -127,7 +110,9 @@
           suffix: document.querySelector("#Result_Record_Show_Step"),
         };
         import * as Service from './javascripts/Service.js';
-        Service.initialize("ESTIMATE", Views, errorMsg); // 初始化載入必要資訊
+        await Service.initialize("ESTIMATE", Views, errorMsg); // 初始化載入必要資訊
+        Service.setConditionQuery();
+        window.setCondition = Service.setConditionQuery;
         Service.RecordParam() ?? (window.confirm = () => Service.ServiceModeExcute());
       </script>
     </div>

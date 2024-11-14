@@ -1,7 +1,8 @@
 var ServiceName, errorMsg, Excute, Exhibit;
+var MediaType, MediaList, RecordList;
 var source, target, result, prefix, suffix;
 // 初始化加載元素
-export function initialize(serviceName, views, msg) {
+export async function initialize(serviceName, views, msg) {
   ServiceName = serviceName;
   errorMsg = msg;
   ({ source, target, result, prefix, suffix } = views);
@@ -10,11 +11,17 @@ export function initialize(serviceName, views, msg) {
       console.log("ESTIMATE Mode.");
       Excute = EstimateExcute;
       Exhibit = EstimateExhibit;
+      MediaType = 'IMAGE';
+      MediaList = await getEstimateMediaList();
+      RecordList = await getEstimateRecordList();
       break;
     case "TRACKING":
       console.log("TRACKING Mode.");
       Excute = TrackingExcute;
       Exhibit = TrackingExhibit;
+      MediaType = 'VIDEO';
+      MediaList = await getTrackingMediaList();
+      RecordList = await getTrackingRecordList();
       break;
     default: console.error("服務類型未設置，無法設置方法!!!");
   }
@@ -52,12 +59,37 @@ function checkInitial(showDetail = null) {
   console.log(resultMsg.toString());
 }
 
-async function GetRecord(URL, recordId) {
-  // 取得紀錄
-  const record = await sendRequest(URL, 'GET');
-  if (!record) { errorMsg.innerText = "該紀錄不存在!"; return; }
-  addParam('recordId', recordId); // 賦予記錄
-  return record;
+export function setConditionQuery() {
+  const mode = prefix.querySelector(".mode");
+  if (!mode) { console.error("條件選擇的類型未選擇或不存在!"); return; }
+  const modeId = mode.id;
+  
+  let dataList, optionsHTML;
+  if (modeId === 'select' && MediaList) { dataList = MediaList; }
+  else if (modeId === 'search' && RecordList) { dataList = RecordList; }
+  else { console.error("條件選擇的類型未選擇或不存在!"); return; }
+  
+  optionsHTML = dataList.map(item => createOptionHTML(item, modeId === 'select', MediaType === 'IMAGE')).join('');
+  setOptionList(modeId, optionsHTML);
+}
+
+function createOptionHTML(item, isSelectMod = false, isImage = false) {
+  const isImageSelectMod = isSelectMod && isImage
+  const MID = item.id;
+  const OptionInfo = isSelectMod ? item.fileName : item.timestamp;
+  const MediaURL = isImageSelectMod ? `${API_URL}/Media/Image/${MID}` : null;
+  return `
+    <div class="option-item" data-value="${MID}">
+      ${isImageSelectMod ? `<img src="${MediaURL}">` : ""}
+      <span>${OptionInfo}</span>
+    </div>
+  `;
+}
+
+function setOptionList(mode, optionsHTML) {
+  const optionList = prefix.querySelector(`#${mode} .select-options`);
+  if (optionList) { optionList.innerHTML = optionsHTML; }
+  else { console.error("選項列表元素不存在!"); }
 }
 
 // ****************************** 功能 ****************************** //
@@ -66,11 +98,14 @@ const API_URL = "http://140.137.41.136:1380/IPBMS/OinkAPI/api"; // API 路徑
 import * as subPage from './subPage.js'
 
 // ********** 豬隻身長估測服務 ********** //
+const getEstimateMediaList = async () => await getResponse(`${API_URL}/Media/Image/List`);
+const getEstimateRecordList = async () => await getResponse(`${API_URL}/Estimate/List`);
+
 // 圖片估測服務流程
 async function EstimateExcute(imageId) {
   try {
     WattingResultView(prefix, suffix);
-    const recordId = await getService(`${API_URL}/Estimate/${imageId}`);
+    const recordId = await excuteService(`${API_URL}/Estimate/${imageId}`);
     if (!recordId) {
       const ERRORMSG = "估測服務失敗";
       errorMsg.innerText = ERRORMSG;
@@ -178,11 +213,14 @@ async function formatPigData(Aid) {
 }
 
 // ********** 豬隻追蹤辨識服務 ********** //
+const getTrackingMediaList = async () => await getResponse(`${API_URL}/Media/Video/List`);
+const getTrackingRecordList = async () => await getResponse(`${API_URL}/Tracking/List`);
+
 // 影片追蹤檢測服務流程
 async function TrackingExcute(videoId) {
   try {
     WattingResultView(prefix, suffix);
-    const recordId = await getService(`${API_URL}/Tracking/${videoId}`);
+    const recordId = await excuteService(`${API_URL}/Tracking/${videoId}`);
     if (!recordId) {
       const ERRORMSG = "追蹤檢測服務失敗";
       errorMsg.innerText = ERRORMSG;
@@ -202,7 +240,6 @@ async function TrackingExhibit(recordId, hasWaitting = null) {
 
     const resultVideoElement = target.querySelector('video');
     setVideo(resultVideoElement, `${API_URL}/Tracking/Record/Video/${recordId}`, "追蹤檢測結果影片");
-    console.log(target, resultVideoElement);
     target.classList.remove(VHidden);
 
     const resultImgElement = result.querySelector('img');
@@ -221,7 +258,7 @@ const VHidden = "visually-hidden";
 // 等待提示元素
 const waittingElement = `
   <div class="h-100 w-100 p-5" id="waitting">
-    <div class="d-flex justify-content-center align-items-center h-100">
+    <div class="d-flex justify-content-center align-items-center text-center h-100">
       <div>
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
@@ -253,24 +290,19 @@ const WattingResultView = (pre, suf) => {
 // 移除element中tag元素
 const removeElement = (element, tag) => element.querySelector(tag)?.remove();
 
-// 送出請求並取得回應
-async function sendRequest(url, method, data = null) {
-  try {
-    const response = await fetch(url, (data ? { method: method, body: data, } : { method: method, }));
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`錯誤：${response.status} - ${errorText}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("發生錯誤：", error);
-    return null;
-    throw error; // 若需要，將錯誤丟出供呼叫者處理
-  }
+// 取得記錄資訊
+async function GetRecord(URL, recordId) {
+  // 取得紀錄
+  const record = await getResponse(URL, 'GET');
+  if (!record) { errorMsg.innerText = "該紀錄不存在!"; return; }
+  addParam('recordId', recordId); // 賦予記錄
+  return record;
 }
 
 // 執行服務並取得recordId
-async function getService(url) {
+const excuteService = async (url) => (await getResponse(url)).recordId;
+
+async function getResponse(url) {
   try {
     const response = await fetch(url, { method: "GET" });
     if (!response.ok) {
@@ -278,8 +310,7 @@ async function getService(url) {
       throw new Error(`錯誤：${response.status} - ${errorText}`);
     }
     const result = await response.json();
-    const recordId = result.recordId;
-    return recordId;
+    return result;
   } catch (error) {
     console.error("發生錯誤：", error);
     throw error; // 將錯誤拋出以供呼叫者處理
@@ -288,7 +319,6 @@ async function getService(url) {
 
 // 圖片展示元素來源設置
 const setImage = (element, url, type) => {
-  console.log('i')
   try { element.src !== url && (element.src = url); }
   catch (error) {
     element.src = '';
@@ -299,13 +329,11 @@ const setImage = (element, url, type) => {
 
 // 影片展示元素來源設置
 const setVideo = (element, url, type) => {
-  console.log('v')
   try {
     if (!element) throw new Error("元素未定義或不存在");
 
     const sourceElement = element.querySelector("source");
     if (!sourceElement) throw new Error("無法找到 source 元素");
-    console.log(element, sourceElement)
     sourceElement.src !== url && (sourceElement.src = url);
     element.style.display = 'block';
     element.load(); // 重新加載影片來源
