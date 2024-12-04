@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PigDB_API.Data;
 
@@ -10,9 +11,11 @@ using PigDB_API.Data;
 namespace PigDB_API.Migrations
 {
     [DbContext(typeof(PigDBContext))]
-    partial class PigDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241204053407_20241204")]
+    partial class _20241204
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,10 +33,6 @@ namespace PigDB_API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DataPath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DepthMapPath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

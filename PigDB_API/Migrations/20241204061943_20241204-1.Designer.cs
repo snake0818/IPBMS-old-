@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PigDB_API.Data;
 
@@ -10,9 +11,11 @@ using PigDB_API.Data;
 namespace PigDB_API.Migrations
 {
     [DbContext(typeof(PigDBContext))]
-    partial class PigDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241204061943_20241204-1")]
+    partial class _202412041
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
