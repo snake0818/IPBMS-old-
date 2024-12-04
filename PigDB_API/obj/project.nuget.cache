@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "8xE9p9hGLTedCglYIHCftxwNpPpHwnpzaPViGQ0A/pH0pae/MPOYpzaVi4DRleHVeWc6bOnMR8H3mzPEaJS3fQ==",
+  "dgSpecHash": "btcju5j1ADfPt5a68baHsfwzJ+W7i+p027ZUTTVt1IUp87dlROylL/KV3sGmDsSHCPjx1oS0ZQ713SnrLtBVOQ==",
   "success": true,
-  "projectFilePath": "D:\\PigDB_API\\PigDB_API.csproj",
+  "projectFilePath": "D:\\WORK\\PigDB_API\\PigDB_API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Administrator\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",

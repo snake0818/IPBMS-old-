@@ -8822,11 +8822,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\PigDB_API\\PigDB_API.csproj",
+      "projectUniqueName": "D:\\WORK\\PigDB_API\\PigDB_API.csproj",
       "projectName": "PigDB_API",
-      "projectPath": "D:\\PigDB_API\\PigDB_API.csproj",
+      "projectPath": "D:\\WORK\\PigDB_API\\PigDB_API.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "D:\\PigDB_API\\obj\\",
+      "outputPath": "D:\\WORK\\PigDB_API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
