@@ -2,8 +2,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PigDB_API.Models
 {
-    [Table("PigAnnotation")]
-    public class PigAnnotation
+    [Table("Pig")]
+    public class Pig
     {
         public int Id { get; set; }
         public required string ImagePath { get; set; }

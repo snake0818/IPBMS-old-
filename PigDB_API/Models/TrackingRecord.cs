@@ -8,6 +8,7 @@ namespace PigDB_API.Models
         public int Id { get; set; }
         public required string ImagePath { get; set; }
         public required string VideoPath { get; set; }
+        public required string DataPath { get; set; }
         public required long Timestamp { get; set; }
 
         [ForeignKey("VideoId")]

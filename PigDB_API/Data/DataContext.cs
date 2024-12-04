@@ -7,7 +7,7 @@ namespace PigDB_API.Data
     {
         public DbSet<Image> Images { get; set; }
         public DbSet<Video> Videos { get; set; }
-        public DbSet<PigAnnotation> PigAnnotations { get; set; }
+        public DbSet<Pig> Pigs { get; set; }
         public DbSet<EstimateRecord> EstimateRecords { get; set; }
         public DbSet<TrackingRecord> TrackingRecords { get; set; }
     }

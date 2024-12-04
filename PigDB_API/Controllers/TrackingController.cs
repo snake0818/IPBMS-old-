@@ -17,13 +17,14 @@ namespace PigDB_API.Controllers
         private readonly SettingService _setting;
         private string _imageFolderPath;
         private string _videoFolderPath;
+        private string _dataFolderPath;
         private string ModelUrl;
 
         public TrackingController(PigDBContext database, SettingService settings)
         {
             _context = database;
             _setting = settings;
-            (_imageFolderPath, _videoFolderPath) = ReloadBasePath();
+            (_imageFolderPath, _videoFolderPath, _dataFolderPath) = ReloadBasePath();
             ModelUrl = _setting.ModelUrl;
         }
         #endregion
@@ -31,30 +32,56 @@ namespace PigDB_API.Controllers
         #region 執行追蹤檢測服務
         [HttpGet]
         [Route("{Video_id}")]
-        public async Task<IActionResult> GetTrackingService(int Video_id)
+        public async Task GetTrackingService(int Video_id)
         {
             if (_setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
+            if (ModelUrl == "|")
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync("模型端連接失敗!");
+                return;
+            }
 
-            if (ModelUrl == "|") return BadRequest(new { error = "模型端連接失敗!" });
+            // 設定 SSE 標頭
+            Response.Headers.Append("Content-Type", "text/event-stream; charset=utf-8");
+            Response.Headers.Append("Cache-Control", "no-cache");
+            Response.Headers.Append("Connection", "keep-alive");
 
-            string Model_URL = $"{ModelUrl}tracking";
+            // 忽略 SSL 驗證
+            var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true };
+            var client = new HttpClient(handler);
+
             try
             {
-                using HttpClient client = new();
-                var response = await client.GetAsync($"{Model_URL}/{Video_id}");
-                response.EnsureSuccessStatusCode();
-                var result = await response.Content.ReadAsStringAsync();
-                return Ok(result);
+                var response = await client.GetAsync($"{ModelUrl}tracking/{Video_id}");
+                using var stream = await response.Content.ReadAsStreamAsync();
+                using var reader = new StreamReader(stream);
+
+                string? line;
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    if (!string.IsNullOrEmpty(line)) // 逐行讀取模型 API 的 SSE 輸出
+                        await SSESendMessageAsync(line); // 將分段數據作為 SSE 事件傳輸
+                }
             }
             // 捕獲異常並返回錯誤信息
             catch (HttpRequestException httpEx)
             {
-                return StatusCode(500, $"模型服務請求錯誤: {httpEx.Message}");
+                await SSESendMessageAsync($"模型服務請求錯誤: {httpEx.Message}");
+                Response.StatusCode = StatusCodes.Status501NotImplemented;
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"執行追蹤檢測服務時發生錯誤: {ex.Message}");
+                await SSESendMessageAsync($"執行追蹤檢測服務時發生錯誤: {ex.Message}");
+                Response.StatusCode = StatusCodes.Status502BadGateway;
             }
+        }
+
+        // 以 SSE 格式發送訊息
+        private async Task SSESendMessageAsync(string message)
+        {
+            await Response.WriteAsync($"data: {message}\n\n");
+            await Response.Body.FlushAsync(); // 確保即時傳輸
         }
         #endregion
 
@@ -86,7 +113,7 @@ namespace PigDB_API.Controllers
                 var record = await _context.TrackingRecords
                     .Select(r => new { r.Id, r.VideoId, r.Timestamp, })
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該追蹤檢測結果紀錄不存在!"); };
+                if (record == null) { return NotFound("該追蹤結果紀錄不存在!"); };
                 return Ok(record);
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -98,34 +125,40 @@ namespace PigDB_API.Controllers
         [HttpPost]
         [Route("Record/{Video_id}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadRecords(IFormFile ImageFile, IFormFile VideoFile, int Video_id)
+        public async Task<IActionResult> UploadRecords(IFormFile ImageFile, IFormFile VideoFile, IFormFile DataFile, int Video_id)
         {
-            if (ImageFile == null || ImageFile.Length == 0)
-                return BadRequest("沒有圖片被上傳!");
-            if (VideoFile == null || VideoFile.Length == 0)
-                return BadRequest("沒有影片被上傳!");
+            if (ImageFile == null || ImageFile.Length == 0) return BadRequest("沒有圖片檔案被上傳!");
+            if (VideoFile == null || VideoFile.Length == 0) return BadRequest("沒有影片檔案被上傳!");
+            if (DataFile == null || DataFile.Length == 0) return BadRequest("沒有數據檔案被上傳!");
+
+            // 確認檔案類型是否正確
+            if (!Path.GetExtension(DataFile.FileName).Equals(".json", StringComparison.CurrentCultureIgnoreCase))
+                return BadRequest("檔案必須為 JSON 格式!");
+            
             try
             {
                 // 更新路徑設置
                 if (_setting.ReloadBaseConnect())
-                    (_imageFolderPath, _videoFolderPath) = ReloadBasePath();
+                    (_imageFolderPath, _videoFolderPath, _dataFolderPath) = ReloadBasePath();
 
                 // 儲存檔案
                 string ImageFilePath = await Shared.CopyFileStream(ImageFile, _imageFolderPath);
                 string VideoFilePath = await Shared.CopyFileStream(VideoFile, _videoFolderPath);
+                string DataFilePath = await Shared.CopyFileStream(DataFile, _dataFolderPath);
 
                 // 儲存紀錄到資料庫
                 var newRecord = new TrackingRecord
                 {
                     ImagePath = ImageFilePath,
                     VideoPath = VideoFilePath,
+                    DataPath = DataFilePath,
                     Timestamp = Shared.UnixTime(),
                     VideoId = Video_id,
                 };
                 _context.TrackingRecords.Add(newRecord);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { Message = "圖片、影片與資訊上傳成功!", newRecord.Id });
+                return Ok(new { Message = "圖片、影片與數據檔案資訊上傳成功!", newRecord.Id });
             }
             // 捕捉例外並回傳 500 狀態碼
             catch (Exception ex) { return StatusCode(500, $"上傳紀錄時發生錯誤: {ex.Message}"); }
@@ -134,14 +167,14 @@ namespace PigDB_API.Controllers
 
         #region 取得圖片
         [HttpGet]
-        [Route("Record/Image/{Record_id}")]
+        [Route("Image/{Record_id}")]
         public async Task<IActionResult> GetImage(int Record_id)
         {
             try
             {
                 var record = await _context.TrackingRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該追蹤檢測結果圖片不存在!"); };
+                if (record == null) { return NotFound("該追蹤檢測結果不存在!"); };
                 return PhysicalFile(record.ImagePath, "image/jpeg");
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -151,14 +184,14 @@ namespace PigDB_API.Controllers
 
         #region 取得影片
         [HttpGet]
-        [Route("Record/Video/{Record_id}")]
+        [Route("Video/{Record_id}")]
         public async Task<IActionResult> GetVideo(int Record_id)
         {
             try
             {
                 var record = await _context.TrackingRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該追蹤檢測結果影片不存在!"); };
+                if (record == null) { return NotFound("該追蹤檢測結果不存在!"); };
 
                 // 回傳影片串流
                 string filePath = $"{record.VideoPath}";
@@ -170,19 +203,38 @@ namespace PigDB_API.Controllers
         }
         #endregion
 
+        #region 取得數據
+        [HttpGet]
+        [Route("Data/{Record_id}")]
+        public async Task<IActionResult> GetData(int Record_id)
+        {
+            try
+            {
+                var record = await _context.TrackingRecords
+                    .FirstOrDefaultAsync(r => r.Id == Record_id);
+                if (record == null) { return NotFound("該追蹤檢測結果不存在!"); };
+                return PhysicalFile(record.DataPath, "application/json");
+            }
+            // 捕捉例外並回傳 500 狀態碼
+            catch (Exception ex) { return StatusCode(500, $"取得紀錄數據時發生錯誤: {ex.Message}"); }
+        }
+        #endregion
+
         #region 方法
 
         // 更新儲存路徑
-        private (string, string) ReloadBasePath()
+        private (string, string, string) ReloadBasePath()
         {
             _setting.ReloadBaseConnect();
             string BasePATH = _setting.BasePath;
             var controllerName = GetType().Name.Replace("Controller", "");
             var imageFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Images");
             var videoFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Videos");
+            var dataFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Data");
             Shared.EnsurePathExists(imageFolderPath);
             Shared.EnsurePathExists(videoFolderPath);
-            return (imageFolderPath, videoFolderPath);
+            Shared.EnsurePathExists(dataFolderPath);
+            return (imageFolderPath, videoFolderPath, dataFolderPath);
         }
 
         #endregion

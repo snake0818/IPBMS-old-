@@ -9,20 +9,20 @@ namespace PigDB_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AnnotationController : Controller
+    public class PigController : Controller
     {
         #region 建構
 
         private readonly PigDBContext _context; // 宣告 PigDB 物件變數
         private readonly SettingService _setting;
-        private string _annotationImageFolderPath;
-        private string _annotationDatasFolderPath;
+        private string _pigImageFolderPath;
+        private string _pigDatasFolderPath;
 
-        public AnnotationController(PigDBContext database, SettingService settings)
+        public PigController(PigDBContext database, SettingService settings)
         {
             _context = database;
             _setting = settings;
-            (_annotationImageFolderPath, _annotationDatasFolderPath) = ReloadBasePath();
+            (_pigImageFolderPath, _pigDatasFolderPath) = ReloadBasePath();
         }
 
         #endregion
@@ -30,7 +30,7 @@ namespace PigDB_API.Controllers
         #region 新增豬隻紀錄
         [HttpPost]
         [Route("Record/{Record_id}")]
-        public async Task<IActionResult> UploadAnnotation(IFormFile ImageFile, IFormFile JsonFile, int Record_id)
+        public async Task<IActionResult> UploadRecords(IFormFile ImageFile, IFormFile JsonFile, int Record_id)
         {
             if (ImageFile == null || ImageFile.Length == 0)
                 return BadRequest("沒有上傳圖片檔案!");
@@ -43,17 +43,17 @@ namespace PigDB_API.Controllers
             try
             {
                 // 儲存檔案
-                string ImageFilePath = await Shared.CopyFileStream(ImageFile, _annotationImageFolderPath, $"R{Record_id}N{ImageFile.FileName}");
-                string JsonFilePath = await Shared.CopyFileStream(JsonFile, _annotationDatasFolderPath, $"R{Record_id}N{JsonFile.FileName}");
+                string ImageFilePath = await Shared.CopyFileStream(ImageFile, _pigImageFolderPath, $"R{Record_id}N{ImageFile.FileName}");
+                string JsonFilePath = await Shared.CopyFileStream(JsonFile, _pigDatasFolderPath, $"R{Record_id}N{JsonFile.FileName}");
 
                 // 儲存紀錄到資料庫
-                var newRecord = new PigAnnotation
+                var newRecord = new Pig
                 {
                     ImagePath = ImageFilePath,
                     DataPath = JsonFilePath,
                     RecordId = Record_id,
                 };
-                _context.PigAnnotations.Add(newRecord);
+                _context.Pigs.Add(newRecord);
                 await _context.SaveChangesAsync();
 
                 return Ok(new { Message = "豬隻圖片與資料上傳成功!", newRecord.Id });
@@ -65,13 +65,13 @@ namespace PigDB_API.Controllers
 
         #region 取得豬隻圖片
         [HttpGet]
-        [Route("Image/{Annotation_id}")]
-        public async Task<IActionResult> GetImage(int Annotation_id)
+        [Route("Image/{Pig_id}")]
+        public async Task<IActionResult> GetImage(int Pig_id)
         {
             try
             {
-                var record = await _context.PigAnnotations
-                    .FirstOrDefaultAsync(r => r.Id == Annotation_id);
+                var record = await _context.Pigs
+                    .FirstOrDefaultAsync(r => r.Id == Pig_id);
                 if (record == null) { return NotFound("該估算豬隻結果圖片不存在!"); };
                 return PhysicalFile(record.ImagePath, "image/jpeg");
             }
@@ -82,13 +82,13 @@ namespace PigDB_API.Controllers
 
         #region 取得豬隻資料
         [HttpGet]
-        [Route("Data/{Annotation_id}")]
-        public async Task<IActionResult> GetData(int Annotation_id)
+        [Route("Data/{Pig_id}")]
+        public async Task<IActionResult> GetData(int Pig_id)
         {
             try
             {
-                var record = await _context.PigAnnotations
-                    .FirstOrDefaultAsync(r => r.Id == Annotation_id);
+                var record = await _context.Pigs
+                    .FirstOrDefaultAsync(r => r.Id == Pig_id);
                 if (record == null) { return NotFound("該估算豬隻結果資訊不存在!"); };
                 return PhysicalFile(record.DataPath, "application/json");
             }

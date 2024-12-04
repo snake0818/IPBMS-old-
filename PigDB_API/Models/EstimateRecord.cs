@@ -6,8 +6,9 @@ namespace PigDB_API.Models
     public class EstimateRecord
     {
         public int Id { get; set; }
-        public required string ImagePath { get; set; }
         public required string DataPath { get; set; }
+        public required string ImagePath { get; set; }
+        public required string DepthMapPath { get; set; }
         public required long Timestamp { get; set; }
 
         [ForeignKey("ImageId")]

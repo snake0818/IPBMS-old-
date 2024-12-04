@@ -38,11 +38,10 @@ namespace PigDB_API.Controllers
 
             if (ModelUrl == "|") return BadRequest(new { error = "模型端連接失敗!" });
 
-            string Model_URL = $"{ModelUrl}estimate";
             try
             {
                 using HttpClient client = new();
-                var response = await client.GetAsync($"{Model_URL}/{Image_id}");
+                var response = await client.GetAsync($"{ModelUrl}estimate/{Image_id}");
                 response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadAsStringAsync();
                 return Ok(result);
@@ -50,11 +49,11 @@ namespace PigDB_API.Controllers
             // 捕獲異常並返回錯誤信息
             catch (HttpRequestException httpEx)
             {
-                return StatusCode(500, $"模型服務請求錯誤: {httpEx.Message}");
+                return StatusCode(501, $"模型服務請求錯誤: {httpEx.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"執行估測服務時發生錯誤: {ex.Message}");
+                return StatusCode(502, $"執行估測服務時發生錯誤: {ex.Message}");
             }
         }
         #endregion
@@ -89,7 +88,7 @@ namespace PigDB_API.Controllers
                     {
                         r.Id,
                         r.ImageId,
-                        AnnotationRecords = _context.PigAnnotations
+                        PigRecords = _context.Pigs
                             .Where(r => r.RecordId == Record_id)
                             .Select(r => r.Id)
                             .ToList(),
@@ -108,12 +107,15 @@ namespace PigDB_API.Controllers
         [HttpPost]
         [Route("Record/{Image_id}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadRecords(IFormFile ImageFile, IFormFile JsonFile, int Image_id)
+        public async Task<IActionResult> UploadRecords(IFormFile ImageFile, IFormFile DepthMapFile, IFormFile JsonFile, int Image_id)
         {
             if (ImageFile == null || ImageFile.Length == 0)
                 return BadRequest("沒有上傳圖片檔案!");
+            if (DepthMapFile == null || DepthMapFile.Length == 0)
+                return BadRequest("沒有上傳深度圖檔案!");
             if (JsonFile == null || JsonFile.Length == 0)
                 return BadRequest("沒有上傳 JSON 檔案!");
+            
             // 確認檔案類型是否正確
             if (!Path.GetExtension(JsonFile.FileName).Equals(".json", StringComparison.CurrentCultureIgnoreCase))
                 return BadRequest("檔案必須為 JSON 格式!");
@@ -126,13 +128,15 @@ namespace PigDB_API.Controllers
 
                 // 儲存檔案
                 string ImageFilePath = await Shared.CopyFileStream(ImageFile, _estimateImageFolderPath);
+                string DepthMapFilePath = await Shared.CopyFileStream(DepthMapFile, _estimateImageFolderPath);
                 string JsonFilePath = await Shared.CopyFileStream(JsonFile, _estimateDataFolderPath);
 
                 // 儲存紀錄到資料庫
                 var newRecord = new EstimateRecord
                 {
-                    ImagePath = ImageFilePath,
                     DataPath = JsonFilePath,
+                    ImagePath = ImageFilePath,
+                    DepthMapPath = DepthMapFilePath,
                     Timestamp = Shared.UnixTime(),
                     ImageId = Image_id,
                 };
@@ -148,14 +152,14 @@ namespace PigDB_API.Controllers
 
         #region 取得紀錄圖片
         [HttpGet]
-        [Route("Record/Image/{Record_id}")]
+        [Route("Image/{Record_id}")]
         public async Task<IActionResult> GetRecordImage(int Record_id)
         {
             try
             {
                 var record = await _context.EstimateRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該估算紀錄結果圖片不存在!"); };
+                if (record == null) { return NotFound("該估測紀錄結果不存在!"); };
                 return PhysicalFile(record.ImagePath, "image/jpeg");
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -163,16 +167,33 @@ namespace PigDB_API.Controllers
         }
         #endregion
 
+        #region 取得紀錄深度圖
+        [HttpGet]
+        [Route("DepthMap/{Record_id}")]
+        public async Task<IActionResult> GetRecordDepthMap(int Record_id)
+        {
+            try
+            {
+                var record = await _context.EstimateRecords
+                    .FirstOrDefaultAsync(r => r.Id == Record_id);
+                if (record == null) { return NotFound("該估測紀錄結果不存在!"); };
+                return PhysicalFile(record.DepthMapPath, "image/jpeg");
+            }
+            // 捕捉例外並回傳 500 狀態碼
+            catch (Exception ex) { return StatusCode(500, $"取得紀錄深度圖時發生錯誤: {ex.Message}"); }
+        }
+        #endregion
+        
         #region 取得紀錄資料
         [HttpGet]
-        [Route("Record/Data/{Record_id}")]
+        [Route("Data/{Record_id}")]
         public async Task<IActionResult> GetRecordData(int Record_id)
         {
             try
             {
                 var record = await _context.EstimateRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該估算紀錄結果資訊不存在!"); };
+                if (record == null) { return NotFound("該估測紀錄結果資訊不存在!"); };
                 return PhysicalFile(record.DataPath, "application/json");
             }
             // 捕捉例外並回傳 500 狀態碼
