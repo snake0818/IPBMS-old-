@@ -34,7 +34,7 @@ namespace PigDB_API.Controllers
         {
             try
             {
-                // 查詢資料庫中的影片記錄
+                // 查詢資料庫中的圖片記錄
                 var query = await _context.Images
                     .Select(m => new
                     {
