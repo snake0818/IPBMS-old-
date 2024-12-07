@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PigDB_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c91991a85f95af4dbacf3678d53dbfdbbf701aa2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c4325702b7e6e0fc05682a618b944a287ab67412")]
 [assembly: System.Reflection.AssemblyProductAttribute("PigDB_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PigDB_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
