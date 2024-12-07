@@ -32,57 +32,83 @@ namespace PigDB_API.Controllers
         #region 執行追蹤檢測服務
         [HttpGet]
         [Route("{Video_id}")]
-        public async Task GetTrackingService(int Video_id)
+        public async Task<IActionResult> GetTrackingService(int Video_id)
         {
             if (_setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
-            if (ModelUrl == "|")
-            {
-                Response.StatusCode = StatusCodes.Status400BadRequest;
-                await Response.WriteAsync("模型端連接失敗!");
-                return;
-            }
 
-            // 設定 SSE 標頭
-            Response.Headers.Append("Content-Type", "text/event-stream; charset=utf-8");
-            Response.Headers.Append("Cache-Control", "no-cache");
-            Response.Headers.Append("Connection", "keep-alive");
-
-            // 忽略 SSL 驗證
-            var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true };
-            var client = new HttpClient(handler);
+            if (ModelUrl == "|") return BadRequest(new { error = "模型端連接失敗!" });
 
             try
             {
+                using HttpClient client = new();
                 var response = await client.GetAsync($"{ModelUrl}tracking/{Video_id}");
-                using var stream = await response.Content.ReadAsStreamAsync();
-                using var reader = new StreamReader(stream);
-
-                string? line;
-                while ((line = await reader.ReadLineAsync()) != null)
-                {
-                    if (!string.IsNullOrEmpty(line)) // 逐行讀取模型 API 的 SSE 輸出
-                        await SSESendMessageAsync(line); // 將分段數據作為 SSE 事件傳輸
-                }
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadAsStringAsync();
+                return Ok(result);
             }
             // 捕獲異常並返回錯誤信息
             catch (HttpRequestException httpEx)
             {
-                await SSESendMessageAsync($"模型服務請求錯誤: {httpEx.Message}");
-                Response.StatusCode = StatusCodes.Status501NotImplemented;
+                return StatusCode(500, $"模型服務請求錯誤: {httpEx.Message}");
             }
             catch (Exception ex)
             {
-                await SSESendMessageAsync($"執行追蹤檢測服務時發生錯誤: {ex.Message}");
-                Response.StatusCode = StatusCodes.Status502BadGateway;
+                return StatusCode(500, $"執行追蹤檢測服務時發生錯誤: {ex.Message}");
             }
         }
 
-        // 以 SSE 格式發送訊息
-        private async Task SSESendMessageAsync(string message)
-        {
-            await Response.WriteAsync($"data: {message}\n\n");
-            await Response.Body.FlushAsync(); // 確保即時傳輸
-        }
+        public async Task GetRealTimeVideo(int stream_id){}
+        public async Task GetRealTimeData(int stream_id){}
+        // public async Task GetTrackingService(int Video_id)
+        // {
+        //     if (_setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
+        //     if (ModelUrl == "|")
+        //     {
+        //         Response.StatusCode = StatusCodes.Status400BadRequest;
+        //         await Response.WriteAsync("模型端連接失敗!");
+        //         return;
+        //     }
+
+        //     // 設定 SSE 標頭
+        //     Response.Headers.Append("Content-Type", "text/event-stream; charset=utf-8");
+        //     Response.Headers.Append("Cache-Control", "no-cache");
+        //     Response.Headers.Append("Connection", "keep-alive");
+
+        //     // 忽略 SSL 驗證
+        //     var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true };
+        //     var client = new HttpClient(handler);
+
+        //     try
+        //     {
+        //         var response = await client.GetAsync($"{ModelUrl}tracking/{Video_id}");
+        //         using var stream = await response.Content.ReadAsStreamAsync();
+        //         using var reader = new StreamReader(stream);
+
+        //         string? line;
+        //         while ((line = await reader.ReadLineAsync()) != null)
+        //         {
+        //             if (!string.IsNullOrEmpty(line)) // 逐行讀取模型 API 的 SSE 輸出
+        //                 await SSESendMessageAsync(line); // 將分段數據作為 SSE 事件傳輸
+        //         }
+        //     }
+        //     // 捕獲異常並返回錯誤信息
+        //     catch (HttpRequestException httpEx)
+        //     {
+        //         await SSESendMessageAsync($"模型服務請求錯誤: {httpEx.Message}");
+        //         Response.StatusCode = StatusCodes.Status501NotImplemented;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         await SSESendMessageAsync($"執行追蹤檢測服務時發生錯誤: {ex.Message}");
+        //         Response.StatusCode = StatusCodes.Status502BadGateway;
+        //     }
+        // }
+        // // 以 SSE 格式發送訊息
+        // private async Task SSESendMessageAsync(string message)
+        // {
+        //     await Response.WriteAsync($"data: {message}\n\n");
+        //     await Response.Body.FlushAsync(); // 確保即時傳輸
+        // }
         #endregion
 
         #region 紀錄清單
@@ -125,7 +151,7 @@ namespace PigDB_API.Controllers
         [HttpPost]
         [Route("Record/{Video_id}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadRecords(IFormFile ImageFile, IFormFile VideoFile, IFormFile DataFile, int Video_id)
+        public async Task<IActionResult> UploadRecords(int Video_id, IFormFile VideoFile, IFormFile DataFile, IFormFile ImageFile)
         {
             if (ImageFile == null || ImageFile.Length == 0) return BadRequest("沒有圖片檔案被上傳!");
             if (VideoFile == null || VideoFile.Length == 0) return BadRequest("沒有影片檔案被上傳!");

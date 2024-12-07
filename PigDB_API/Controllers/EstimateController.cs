@@ -107,7 +107,7 @@ namespace PigDB_API.Controllers
         [HttpPost]
         [Route("Record/{Image_id}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadRecords(IFormFile ImageFile, IFormFile DepthMapFile, IFormFile JsonFile, int Image_id)
+        public async Task<IActionResult> UploadRecords(int Image_id, IFormFile JsonFile, IFormFile ImageFile, IFormFile DepthMapFile)
         {
             if (ImageFile == null || ImageFile.Length == 0)
                 return BadRequest("沒有上傳圖片檔案!");
@@ -115,7 +115,7 @@ namespace PigDB_API.Controllers
                 return BadRequest("沒有上傳深度圖檔案!");
             if (JsonFile == null || JsonFile.Length == 0)
                 return BadRequest("沒有上傳 JSON 檔案!");
-            
+
             // 確認檔案類型是否正確
             if (!Path.GetExtension(JsonFile.FileName).Equals(".json", StringComparison.CurrentCultureIgnoreCase))
                 return BadRequest("檔案必須為 JSON 格式!");
@@ -183,7 +183,7 @@ namespace PigDB_API.Controllers
             catch (Exception ex) { return StatusCode(500, $"取得紀錄深度圖時發生錯誤: {ex.Message}"); }
         }
         #endregion
-        
+
         #region 取得紀錄資料
         [HttpGet]
         [Route("Data/{Record_id}")]
