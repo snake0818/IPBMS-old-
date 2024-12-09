@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
-    serverOptions.Limits.MaxRequestBodySize = 128 * 1024 * 1024);
+    serverOptions.Limits.MaxRequestBodySize = 1024 * 1024 * 1024);
 
 builder.Services.AddDbContext<PigDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
