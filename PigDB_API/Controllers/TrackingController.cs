@@ -32,83 +32,124 @@ namespace PigDB_API.Controllers
         #region 執行追蹤檢測服務
         [HttpGet]
         [Route("{Video_id}")]
-        public async Task<IActionResult> GetTrackingService(int Video_id)
-        {
-            if (_setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
-
-            if (ModelUrl == "|") return BadRequest(new { error = "模型端連接失敗!" });
-
-            try
-            {
-                using HttpClient client = new();
-                var response = await client.GetAsync($"{ModelUrl}tracking/{Video_id}");
-                response.EnsureSuccessStatusCode();
-                var result = await response.Content.ReadAsStringAsync();
-                return Ok(result);
-            }
-            // 捕獲異常並返回錯誤信息
-            catch (HttpRequestException httpEx)
-            {
-                return StatusCode(500, $"模型服務請求錯誤: {httpEx.Message}");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"執行追蹤檢測服務時發生錯誤: {ex.Message}");
-            }
-        }
-
-        public async Task GetRealTimeVideo(int stream_id){}
-        public async Task GetRealTimeData(int stream_id){}
-        // public async Task GetTrackingService(int Video_id)
+        // public async Task<IActionResult> GetTrackingService(int Video_id)
         // {
         //     if (_setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
-        //     if (ModelUrl == "|")
-        //     {
-        //         Response.StatusCode = StatusCodes.Status400BadRequest;
-        //         await Response.WriteAsync("模型端連接失敗!");
-        //         return;
-        //     }
 
-        //     // 設定 SSE 標頭
-        //     Response.Headers.Append("Content-Type", "text/event-stream; charset=utf-8");
-        //     Response.Headers.Append("Cache-Control", "no-cache");
-        //     Response.Headers.Append("Connection", "keep-alive");
-
-        //     // 忽略 SSL 驗證
-        //     var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true };
-        //     var client = new HttpClient(handler);
+        //     if (ModelUrl == "|") return BadRequest(new { error = "模型端連接失敗!" });
 
         //     try
         //     {
+        //         using HttpClient client = new();
         //         var response = await client.GetAsync($"{ModelUrl}tracking/{Video_id}");
-        //         using var stream = await response.Content.ReadAsStreamAsync();
-        //         using var reader = new StreamReader(stream);
-
-        //         string? line;
-        //         while ((line = await reader.ReadLineAsync()) != null)
-        //         {
-        //             if (!string.IsNullOrEmpty(line)) // 逐行讀取模型 API 的 SSE 輸出
-        //                 await SSESendMessageAsync(line); // 將分段數據作為 SSE 事件傳輸
-        //         }
+        //         response.EnsureSuccessStatusCode();
+        //         var result = await response.Content.ReadAsStringAsync();
+        //         return Ok(result);
         //     }
         //     // 捕獲異常並返回錯誤信息
         //     catch (HttpRequestException httpEx)
         //     {
-        //         await SSESendMessageAsync($"模型服務請求錯誤: {httpEx.Message}");
-        //         Response.StatusCode = StatusCodes.Status501NotImplemented;
+        //         return StatusCode(500, $"模型服務請求錯誤: {httpEx.Message}");
         //     }
         //     catch (Exception ex)
         //     {
-        //         await SSESendMessageAsync($"執行追蹤檢測服務時發生錯誤: {ex.Message}");
-        //         Response.StatusCode = StatusCodes.Status502BadGateway;
+        //         return StatusCode(500, $"執行追蹤檢測服務時發生錯誤: {ex.Message}");
         //     }
         // }
-        // // 以 SSE 格式發送訊息
-        // private async Task SSESendMessageAsync(string message)
-        // {
-        //     await Response.WriteAsync($"data: {message}\n\n");
-        //     await Response.Body.FlushAsync(); // 確保即時傳輸
-        // }
+        public async Task GetTrackingService(int Video_id)
+        {
+            if (_setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
+            if (ModelUrl == "|")
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync("模型端連接失敗!");
+                return;
+            }
+
+            // 設定 SSE 標頭
+            Response.Headers.Append("Content-Type", "text/event-stream; charset=utf-8");
+            Response.Headers.Append("Cache-Control", "no-cache");
+            Response.Headers.Append("Connection", "keep-alive");
+
+            // 忽略 SSL 驗證
+            var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true };
+            var client = new HttpClient(handler);
+
+            try
+            {
+                var response = await client.GetAsync($"{ModelUrl}tracking/{Video_id}");
+                using var stream = await response.Content.ReadAsStreamAsync();
+                using var reader = new StreamReader(stream);
+
+                string? line;
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    if (!string.IsNullOrEmpty(line)) // 逐行讀取模型 API 的 SSE 輸出
+                        await SSESendMessageAsync(line); // 將分段數據作為 SSE 事件傳輸
+                }
+            }
+            // 捕獲異常並返回錯誤信息
+            catch (HttpRequestException httpEx)
+            {
+                await SSESendMessageAsync($"模型服務請求錯誤: {httpEx.Message}");
+                Response.StatusCode = StatusCodes.Status501NotImplemented;
+            }
+            catch (Exception ex)
+            {
+                await SSESendMessageAsync($"執行追蹤檢測服務時發生錯誤: {ex.Message}");
+                Response.StatusCode = StatusCodes.Status502BadGateway;
+            }
+        }
+
+        // 以 SSE 格式發送訊息
+        private async Task SSESendMessageAsync(string message)
+        {
+            await Response.WriteAsync($"data: {message}\n\n");
+            await Response.Body.FlushAsync(); // 確保即時傳輸
+        }
+        #endregion
+
+        #region 轉發即時辨識影像串流
+        [Route("Streaming")]
+        [HttpGet]
+        public async Task ForwardVideoStream()
+        {
+            Response.ContentType = "text/plain; charset=utf-8";
+            if (_setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
+            if (ModelUrl == "|")
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync("模型端連接失敗!");
+                return;
+            }
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync($"{ModelUrl}/video_stream", HttpCompletionOption.ResponseHeadersRead);
+
+            // 檢查是否成功，若無內容則回傳提示訊息
+            if (!response.IsSuccessStatusCode)
+            {
+                Response.StatusCode = StatusCodes.Status502BadGateway;
+                await Response.WriteAsync("即時辨識影像路由連接失敗!");
+                return;
+            }
+
+            // 設定回應的內容類型
+            Response.ContentType = "multipart/x-mixed-replace; boundary=frame";
+
+            // 讀取串流並將內容寫回給客戶端
+            try
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                await stream.CopyToAsync(Response.Body); // 持續將服務端的串流資料寫入回應，保持連接直到結束
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"串流中發生錯誤: {ex.Message}");
+                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                await Response.WriteAsync("串流過程中發生錯誤！");
+            }
+        }
         #endregion
 
         #region 紀錄清單
@@ -160,7 +201,7 @@ namespace PigDB_API.Controllers
             // 確認檔案類型是否正確
             if (!Path.GetExtension(DataFile.FileName).Equals(".json", StringComparison.CurrentCultureIgnoreCase))
                 return BadRequest("檔案必須為 JSON 格式!");
-            
+
             try
             {
                 // 更新路徑設置
