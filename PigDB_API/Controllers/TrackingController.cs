@@ -77,7 +77,15 @@ namespace PigDB_API.Controllers
 
             try
             {
-                var response = await client.GetAsync($"{ModelUrl}tracking/{Video_id}");
+                var response = await client.GetAsync($"{ModelUrl}tracking/{Video_id}", HttpCompletionOption.ResponseHeadersRead);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await SSESendMessageAsync($"模型服務請求錯誤: {response.ReasonPhrase}");
+                    Response.StatusCode = StatusCodes.Status502BadGateway;
+                    return;
+                }
+
                 using var stream = await response.Content.ReadAsStreamAsync();
                 using var reader = new StreamReader(stream);
 
@@ -261,9 +269,7 @@ namespace PigDB_API.Controllers
                 if (record == null) { return NotFound("該追蹤檢測結果不存在!"); };
 
                 // 回傳影片串流
-                string filePath = $"{record.VideoPath}";
-                return Shared.StreamVideo(filePath);
-                // return PhysicalFile(filePath, "application/dash+xml");
+                return Shared.StreamVideo(record.VideoPath);
             }
             // 捕捉例外並回傳 500 狀態碼
             catch (Exception ex) { return StatusCode(500, $"取得紀錄圖片時發生錯誤: {ex.Message}"); }

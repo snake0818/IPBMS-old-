@@ -56,7 +56,7 @@ namespace PigDB_API.Utils
             // 回傳串流影片檔案 (啟用範圍處理)
             return new PhysicalFileResult(filePath, "video/mp4") { EnableRangeProcessing = true };
 
-
+            // return PhysicalFile(filePath, "application/dash+xml");
 
             // 2
             // var videoFileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
