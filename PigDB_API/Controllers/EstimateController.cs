@@ -16,6 +16,7 @@ namespace PigDB_API.Controllers
         private readonly PigDBContext _context; // 宣告 PigDB 物件變數
         private readonly SettingService _setting;
         private string _estimateImageFolderPath;
+        private string _estimateDepthMapFolderPath;
         private string _estimateDataFolderPath;
         private string ModelUrl;
 
@@ -23,7 +24,7 @@ namespace PigDB_API.Controllers
         {
             _context = database;
             _setting = settings;
-            (_estimateImageFolderPath, _estimateDataFolderPath) = ReloadBasePath();
+            (_estimateImageFolderPath, _estimateDataFolderPath, _estimateDepthMapFolderPath) = ReloadBasePath();
             ModelUrl = _setting.ModelUrl;
         }
 
@@ -88,11 +89,11 @@ namespace PigDB_API.Controllers
                     {
                         r.Id,
                         r.ImageId,
-                        PigRecords = _context.Pigs
-                            .Where(r => r.RecordId == Record_id)
-                            .Select(r => r.Id)
-                            .ToList(),
-                        r.Timestamp,
+                        // PigRecords = _context.Pigs
+                        //     .Where(r => r.RecordId == Record_id)
+                        //     .Select(r => r.Id)
+                        //     .ToList(),
+                        // r.Timestamp,
                     })
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
                 if (record == null) { return NotFound("該估測結果紀錄不存在!"); };
@@ -124,11 +125,11 @@ namespace PigDB_API.Controllers
             {
                 // 更新路徑設置
                 if (_setting.ReloadBaseConnect())
-                    (_estimateImageFolderPath, _estimateDataFolderPath) = ReloadBasePath();
+                    (_estimateImageFolderPath, _estimateDataFolderPath, _estimateDepthMapFolderPath) = ReloadBasePath();
 
                 // 儲存檔案
                 string ImageFilePath = await Shared.CopyFileStream(ImageFile, _estimateImageFolderPath);
-                string DepthMapFilePath = await Shared.CopyFileStream(DepthMapFile, _estimateImageFolderPath);
+                string DepthMapFilePath = await Shared.CopyFileStream(DepthMapFile, _estimateDepthMapFolderPath);
                 string JsonFilePath = await Shared.CopyFileStream(JsonFile, _estimateDataFolderPath);
 
                 // 儲存紀錄到資料庫
@@ -204,15 +205,17 @@ namespace PigDB_API.Controllers
         #region 方法
 
         // 更新儲存路徑
-        private (string, string) ReloadBasePath()
+        private (string, string, string) ReloadBasePath()
         {
             string BasePATH = _setting.BasePath;
             var controllerName = GetType().Name.Replace("Controller", "");
             var estimateImageFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Images");
             var estimateDataFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Data");
+            var estimateDepthMapFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "DepthMap");
             Shared.EnsurePathExists(estimateImageFolderPath);
             Shared.EnsurePathExists(estimateDataFolderPath);
-            return (estimateImageFolderPath, estimateDataFolderPath);
+            Shared.EnsurePathExists(estimateDepthMapFolderPath);
+            return (estimateImageFolderPath, estimateDataFolderPath, estimateDepthMapFolderPath);
         }
 
         #endregion
