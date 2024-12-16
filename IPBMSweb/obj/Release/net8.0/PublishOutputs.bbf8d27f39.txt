@@ -1,0 +1,7 @@
+D:\WORK\IPBMSweb\obj\Release\net8.0\PubTmp\Out\IPBMSweb.exe
+D:\WORK\IPBMSweb\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
+D:\WORK\IPBMSweb\obj\Release\net8.0\PubTmp\Out\appsettings.json
+D:\WORK\IPBMSweb\obj\Release\net8.0\PubTmp\Out\IPBMSweb.dll
+D:\WORK\IPBMSweb\obj\Release\net8.0\PubTmp\Out\IPBMSweb.deps.json
+D:\WORK\IPBMSweb\obj\Release\net8.0\PubTmp\Out\IPBMSweb.runtimeconfig.json
+D:\WORK\IPBMSweb\obj\Release\net8.0\PubTmp\Out\IPBMSweb.pdb

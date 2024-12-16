@@ -1,0 +1,42 @@
+.custom-select {
+  display: none;
+  position: relative;
+}
+.custom-select.mode{
+  display: block;
+}
+.select-box {
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+.select-options {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  z-index: 10;
+}
+.select-options.show{
+  display: block;
+  max-height: 60vh;
+  overflow-y: scroll;
+}
+.option-item {
+  padding: 10px;
+  /* display: flex; */
+  align-items: center;
+  cursor: pointer;
+}
+.option-item:hover{
+  background-color: #ccc;
+}
+.option-item img {
+  margin-right: 10px;
+  max-width: 450px;
+  width: 100%;
+}

@@ -1,0 +1,85 @@
+:root {
+  --global-background: rgba(242, 242, 242, .92);
+  --preview-image-size: 100px;
+}
+
+/* ::-webkit-scrollbar {
+  display: none;
+} */
+
+/* 滾動軸樣式 */
+::-webkit-scrollbar {
+  display: block;
+  height: 12px;
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 10px;
+  border: 1px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+main, body {
+  font-family: 'Times New Roman', '標楷體', serif;
+  background: rgba(230, 230, 230, 1);
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+
+  /*** 禁用選取 ***/
+  /* Safari */
+  -webkit-user-select: none;
+  /* Firefox */
+  -moz-user-select: none;
+  /* Internet Explorer/Edge */
+  -ms-user-select: none;
+  /* 新的瀏覽器 */
+  user-select: none;
+}
+
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+}
+
+section {
+  background: rgba(230, 230, 230, 0.8);
+  padding-top: 60px;
+  display: block;
+}
+
+p {
+  font-size: x-large;
+}
+
+@media (min-width: 1600px) {
+  .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+      max-width: 1540px;
+  }
+}
+@media (min-width: 1800px) {
+  .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+      max-width: 1720px;
+  }
+}

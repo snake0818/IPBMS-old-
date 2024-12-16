@@ -1,0 +1,102 @@
+/*********** 子頁面區域 ***********/
+.subPage {
+  position: fixed;
+  inset: 0;
+  /* 簡化 top, left, right, bottom = 0 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* 半透明背景 */
+  background-color: rgba(255, 255, 255, 0.5);
+  /* 添加背景模糊效果 */
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 1000;
+  /* 確保層級優先 */
+  overflow: auto;
+  /* 避免超出邊界 */
+}
+
+.subContent {
+  min-width: 300px;
+  max-width: 90vw;
+  max-height: 90vh;
+  background-color: rgba(255, 255, 255, 0.9);
+  /* 半透明白色背景 */
+  border: 1px solid #ccc;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  /* 添加陰影效果 */
+  transform: scale(0.8);
+  /* 初始縮放狀態 */
+  opacity: 0;
+  /* 初始透明 */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  overflow-y: auto;
+}
+
+/* 顯示子頁面時的樣式 */
+.subPage.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.subPage.active .subContent {
+  transform: scale(1);
+  /* 恢復正常大小 */
+  opacity: 1;
+  overflow-y: auto;
+}
+
+.subContent .img-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 80vh;
+  max-width: 80vw;
+}
+
+/* 圖片自適應，但不超過父容器 */
+.subContent .img-container img {
+  width: fit-content;
+  height: fit-content;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  /* 保持圖片比例 */
+}
+
+.subContent .info-card {
+  min-width: 280px;
+  justify-content: center;
+}
+
+.subContent .info-container {
+  padding: 1rem 1rem;
+}
+
+.subContent .info-title,
+.info-content .info-sub-title {
+  font-weight: bold;
+}
+
+.subContent span {
+  font-weight: normal;
+}
+
+.subContent .info-content {}
+
+/* 進場縮放動畫 */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

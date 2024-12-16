@@ -1,0 +1,100 @@
+﻿<header id="header">
+    <nav id="nav">
+        <div id="nav-content" class="text-center">
+            <ul id="nav-list" class="nav-list">
+                <li id="nav-title">
+                    <a class="nav-link fw-bold" asp-area="" asp-controller="Page" asp-action="Index">IBMS</a>
+                </li>
+                <!-- 展示 -->
+                <li id="nav-menu">
+                    <div class="nav-menu-list">
+                        <div class="nav-item">
+                            <ul class="nav-item-text">
+                                <li>
+                                    <a class="nav-link">介紹</a>
+                                </li>
+                            </ul>
+                            <div id="nav-submenu-introduce" class="nav-submenu" style="--var-item-total: 10">
+                                <div class="nav-submenu-container">
+                                    <div class="nav-submenu-content">
+                                        <!-- 介紹 -->
+                                        <div class="nav-submenu-group-main">
+                                            <h2 class="nav-submenu-header" style="--var-item-number: 1">專題介紹</h2>
+                                            <ul class="nav-submenu-list">
+                                                <li class="nav-submenu-item" style="--var-item-number: 2">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="">研究過程</a>
+                                                </li>
+                                                <li class="nav-submenu-item" style="--var-item-number: 3">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="">系統設計</a>
+                                                </li>
+                                                <li class="nav-submenu-item" style="--var-item-number: 4">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="">研究結論</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!-- 其他 -->
+                                        <div class="nav-submenu-group">
+                                            <h2 class="nav-submenu-header" style="--var-item-number: 1">其他</h2>
+                                            <ul class="nav-submenu-list">
+                                                <li class="nav-submenu-item" style="--var-item-number: 7">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="">參考文獻</a>
+                                                </li>
+                                                <li class="nav-submenu-item" style="--var-item-number: 8">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="">開發工具</a>
+                                                </li>
+                                                <li class="nav-submenu-item" style="--var-item-number: 9">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="">分工與進度</a>
+                                                </li>
+                                                <li class="nav-submenu-item" style="--var-item-number: 10">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="">GitHub</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 服務 -->
+                        <div class="nav-item">
+                            <ul class="nav-item-text">
+                                <li>
+                                    <a class="nav-link">服務</a>
+                                </li>
+                            </ul>
+                            <div id="nav-submenu-service" class="nav-submenu" style="--var-item-total: 4">
+                                <div class="nav-submenu-container">
+                                    <div class="nav-submenu-content">
+                                        <div class="nav-submenu-group-main">
+                                            <h2 class="nav-submenu-header" style="--var-item-number: 1">所有服務</h2>
+                                            <ul class="nav-submenu-list">
+                                                <li class="nav-submenu-item" style="--var-item-number: 2">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="Estimate">豬隻大小估算</a>
+                                                </li>
+                                                <li class="nav-submenu-item" style="--var-item-number: 3">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="Tracking">豬隻活動追蹤</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="nav-curtain"></div>
+    <div class="nav-placeholder"></div>
+    <link rel="stylesheet" href="~/css/navbar.css">
+    <script src="~/js/lib/navbar.js"></script>
+</header>

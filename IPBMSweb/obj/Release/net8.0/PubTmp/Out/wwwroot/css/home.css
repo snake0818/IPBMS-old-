@@ -1,0 +1,42 @@
+.home-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+#home-section{
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#demo-videos-show {
+  background: rgba(150, 150, 150, 0.8);
+  min-height: 450px;
+  align-content: center;
+}
+
+#keyword-block .btn-keyword {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  color: #fff;
+  background: #8315f9;
+}
+
+@media (min-width: 1024px) {
+  #home-section > #home-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: .1rem;
+  }
+  #home-section > #home-container > div#ProjectTitle {
+    flex: 0.75;
+  }
+  #home-section > #home-container > div#ViewAndTags {
+    flex: 1;
+  }
+}
