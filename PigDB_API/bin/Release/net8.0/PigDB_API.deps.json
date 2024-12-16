@@ -12,7 +12,8 @@
           "Microsoft.EntityFrameworkCore": "8.0.3",
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.3",
           "Microsoft.EntityFrameworkCore.Tools": "8.0.3",
-          "Swashbuckle.AspNetCore": "6.8.0"
+          "Swashbuckle.AspNetCore": "6.8.0",
+          "bootstrap": "5.3.3"
         },
         "runtime": {
           "PigDB_API.dll": {}
@@ -52,6 +53,7 @@
           }
         }
       },
+      "bootstrap/5.3.3": {},
       "DotNetEnv/3.1.1": {
         "dependencies": {
           "Microsoft.Extensions.Configuration": "1.1.2",
@@ -1590,6 +1592,13 @@
       "sha512": "sha512-l1Xm2MWOF2Mzcwuarlw8kWQXLZk3UeB55aQXVyjj23aBfDwOZ3gu5GP2kJ6KlmZeZv2TCzw7x4L3V36iNr3gww==",
       "path": "azure.identity/1.10.3",
       "hashPath": "azure.identity.1.10.3.nupkg.sha512"
+    },
+    "bootstrap/5.3.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-iQohLXwneNPDyW4x24mKQ90qGwT5WTtNl3KybL0koTluJPjKYxFCU/NTLHsJiWR2n7VmnwcpAgr8TR42KNmPOg==",
+      "path": "bootstrap/5.3.3",
+      "hashPath": "bootstrap.5.3.3.nupkg.sha512"
     },
     "DotNetEnv/3.1.1": {
       "type": "package",

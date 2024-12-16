@@ -276,3 +276,4 @@ D:\WORK\PigDB_API\obj\Release\net8.0\refint\PigDB_API.dll
 D:\WORK\PigDB_API\obj\Release\net8.0\PigDB_API.pdb
 D:\WORK\PigDB_API\obj\Release\net8.0\PigDB_API.genruntimeconfig.cache
 D:\WORK\PigDB_API\obj\Release\net8.0\ref\PigDB_API.dll
+D:\WORK\PigDB_API\bin\Release\net8.0\PigDB_API.staticwebassets.runtime.json
